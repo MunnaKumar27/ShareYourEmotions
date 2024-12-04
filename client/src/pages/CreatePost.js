@@ -20,7 +20,6 @@ export default function CreatePost() {
     const response = await fetch('https://shareyouremotion-backend.onrender.com/post/', {
       method: 'POST',
       body: data,
-      headers: {'Content-Type':'application/json'},
       credentials: 'include',
     });
     if (response.ok) {
