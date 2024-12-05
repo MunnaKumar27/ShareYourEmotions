@@ -48,6 +48,8 @@ export default function EditPost() {
     data.set('summary', summary);
     data.set('content', content);
     data.set('id', id);
+
+    // Check if files exist before appending
     if (files?.[0]) {
       data.set('file', files?.[0]);
     }
@@ -60,12 +62,13 @@ export default function EditPost() {
       });
 
       if (response.ok) {
-        setRedirect(true);
+        setRedirect(true); // Redirect to the post page
       } else {
-        throw new Error('Failed to update post');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update post');
       }
     } catch (error) {
-      setError('Failed to update post');
+      setError(`Error: ${error.message}`);
     }
   }
 
