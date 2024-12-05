@@ -1,28 +1,48 @@
-import {useEffect, useState} from "react";
-import {Navigate, useParams} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Navigate, useParams } from "react-router-dom";
 import Editor from "../Editor";
 
 export default function EditPost() {
-  const {id} = useParams();
-  const [title,setTitle] = useState('');
-  const [summary,setSummary] = useState('');
-  const [content,setContent] = useState('');
+  const { id } = useParams();
+  const [title, setTitle] = useState('');
+  const [summary, setSummary] = useState('');
+  const [content, setContent] = useState('');
   const [files, setFiles] = useState('');
-  const [redirect,setRedirect] = useState(false);
+  const [redirect, setRedirect] = useState(false);
+  const [error, setError] = useState(null); // For error handling
+  const [isLoading, setIsLoading] = useState(true); // Loading state
 
   useEffect(() => {
-    fetch('http://localhost:4000/post/'+id)
-      .then(response => {
-        response.json().then(postInfo => {
-          setTitle(postInfo.title);
-          setContent(postInfo.content);
-          setSummary(postInfo.summary);
-        });
-      });
-  }, []);
+    // Fetch post data when component mounts
+    const fetchPost = async () => {
+      try {
+        const response = await fetch(`http://localhost:4000/post/${id}`);
+        if (!response.ok) {
+          throw new Error('Post not found');
+        }
+        const postInfo = await response.json();
+        setTitle(postInfo.title);
+        setContent(postInfo.content);
+        setSummary(postInfo.summary);
+      } catch (error) {
+        setError('Failed to load post');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPost();
+  }, [id]);
 
   async function updatePost(ev) {
     ev.preventDefault();
+
+    // Ensure fields are not empty
+    if (!title || !summary || !content) {
+      alert('Please fill in all fields.');
+      return;
+    }
+
     const data = new FormData();
     data.set('title', title);
     data.set('summary', summary);
@@ -31,34 +51,53 @@ export default function EditPost() {
     if (files?.[0]) {
       data.set('file', files?.[0]);
     }
-    const response = await fetch('http://localhost:4000/post', {
-      method: 'PUT',
-      body: data,
-      credentials: 'include',
-    });
-    if (response.ok) {
-      setRedirect(true);
+
+    try {
+      const response = await fetch('http://localhost:4000/post', {
+        method: 'PUT',
+        body: data,
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        setRedirect(true);
+      } else {
+        throw new Error('Failed to update post');
+      }
+    } catch (error) {
+      setError('Failed to update post');
     }
   }
 
   if (redirect) {
-    return <Navigate to={'/post/'+id} />
+    return <Navigate to={`/post/${id}`} />;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
   return (
     <form onSubmit={updatePost}>
-      <input type="title"
-             placeholder={'Title'}
-             value={title}
-             onChange={ev => setTitle(ev.target.value)} />
-      <input type="summary"
-             placeholder={'Summary'}
-             value={summary}
-             onChange={ev => setSummary(ev.target.value)} />
-      <input type="file"
-             onChange={ev => setFiles(ev.target.files)} />
+      {error && <div style={{ color: 'red' }}>{error}</div>} {/* Show error message */}
+      <input
+        type="text"
+        placeholder="Title"
+        value={title}
+        onChange={ev => setTitle(ev.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Summary"
+        value={summary}
+        onChange={ev => setSummary(ev.target.value)}
+      />
+      <input
+        type="file"
+        onChange={ev => setFiles(ev.target.files)}
+      />
       <Editor onChange={setContent} value={content} />
-      <button style={{marginTop:'5px'}}>Update post</button>
+      <button style={{ marginTop: '5px' }}>Update Post</button>
     </form>
   );
 }
