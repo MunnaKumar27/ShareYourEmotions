@@ -57,9 +57,6 @@ export default function EditPost() {
         method: 'PUT',
         body: data,
         credentials: 'include',
-        headers: {
-          'Content-Type': 'multipart/form-data',  // Adjust headers based on your request type
-        },
       });
 
       if (response.ok) {
