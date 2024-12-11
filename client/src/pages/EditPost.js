@@ -16,7 +16,7 @@ export default function EditPost() {
     // Fetch post data when component mounts
     const fetchPost = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/post/${id}`);
+        const response = await fetch(`https://shareyouremotion-backend.onrender.com/post/${id}`);
         if (!response.ok) {
           throw new Error('Post not found');
         }
@@ -55,7 +55,7 @@ export default function EditPost() {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/post', {
+      const response = await fetch('https://shareyouremotion-backend.onrender.com/post', {
         method: 'PUT',
         body: data,
         credentials: 'include',
