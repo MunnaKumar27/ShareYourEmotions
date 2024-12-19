@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'; // Importing the useNavigate hoo
 
 const CreatePost = () => {
   const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(''); // Raw HTML content
   const [image, setImage] = useState(null);
   const [tags, setTags] = useState(''); // To store the tags
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ const CreatePost = () => {
 
     const formData = new FormData();
     formData.append('title', title);
-    formData.append('content', content);
+    formData.append('content', content); // Send raw HTML content
     formData.append('image', image);
     formData.append('tags', JSON.stringify(tagArray)); // Send tags as a JSON string
 
@@ -42,15 +42,21 @@ const CreatePost = () => {
     }
   };
 
+  // Handle content formatting actions (bold, italic, etc.)
+  const handleFormat = (e) => {
+    document.execCommand(e.target.value, false, null);
+  };
+
   return (
     <div style={styles.container}>
       <h1>Create a New Post</h1>
       <form onSubmit={handleSubmit} style={styles.form}>
         <div style={styles.formGroup}>
-          <label htmlFor="title">Title</label>
+          <label htmlFor="title" >Title</label>
           <input
             type="text"
             id="title"
+            placeholder="kuch relatable likh do"
             name="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -61,14 +67,61 @@ const CreatePost = () => {
 
         <div style={styles.formGroup}>
           <label htmlFor="content">Content</label>
-          <textarea
+          <div
             id="content"
-            name="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+            contentEditable="true"
+            placeholder="Start writing your content here..."
+            onInput={(e) => setContent(e.target.innerHTML)}
             style={styles.textarea}
             required
-          />
+        
+          >
+            {/* Placeholder text for the editable content */}
+            {/* <p></p> */}
+          </div>
+        </div>
+
+        <div style={styles.toolbar}>
+          <button
+            type="button"
+            value="bold"
+            onClick={handleFormat}
+            style={styles.toolbarButton}
+          >
+            B
+          </button>
+          <button
+            type="button"
+            value="italic"
+            onClick={handleFormat}
+            style={styles.toolbarButton}
+          >
+            I
+          </button>
+          <button
+            type="button"
+            value="justifyLeft"
+            onClick={handleFormat}
+            style={styles.toolbarButton}
+          >
+            Left
+          </button>
+          <button
+            type="button"
+            value="justifyCenter"
+            onClick={handleFormat}
+            style={styles.toolbarButton}
+          >
+            Center
+          </button>
+          <button
+            type="button"
+            value="justifyRight"
+            onClick={handleFormat}
+            style={styles.toolbarButton}
+          >
+            Right
+          </button>
         </div>
 
         <div style={styles.formGroup}>
@@ -90,7 +143,7 @@ const CreatePost = () => {
             name="tags"
             value={tags}
             onChange={(e) => setTags(e.target.value)}
-            placeholder="e.g. travel, nature, food"
+            placeholder="e.g. Insta post, poem, story"
             style={styles.input}
           />
         </div>
@@ -133,6 +186,21 @@ const styles = {
     border: '1px solid #ccc',
     fontSize: '1rem',
     height: '150px',
+    minHeight: '150px',
+    whiteSpace: 'pre-wrap',
+  },
+  toolbar: {
+    display: 'flex',
+    gap: '10px',
+    marginBottom: '10px',
+  },
+  toolbarButton: {
+    padding: '5px 10px',
+    fontSize: '1rem',
+    backgroundColor: '#blue',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    cursor: 'pointer',
   },
   submitButton: {
     padding: '10px 20px',
