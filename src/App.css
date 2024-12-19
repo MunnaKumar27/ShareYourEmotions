@@ -3,16 +3,18 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  
 }
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  color: #333;
+  /* background-color: #f4f4f4; */
+  /* background-color: #6486b5a5; */
+  background: rgb(2,0,36);
 }
 
 h1, h2 {
-  color: #333;
+  color: #000000;
 }
 
 a {
@@ -25,21 +27,21 @@ ul {
 }
 
 .container {
-  width: 90%;
-  max-width: 1200px;
+  /* max-width: 1200px; */
+  width: 100%;
   margin: 0 auto;
-  padding: 20px;
+  padding: 2px;
 }
-
+/* 
 nav {
-  background-color: #333;
-  color: white;
+  background-color: #231313;
+  color: rgb(70, 33, 33);
   padding: 10px 0;
   text-align: center;
-}
+} */
 
 nav a {
-  color: white;
+  color: rgb(214, 21, 21);
   margin: 0 20px;
   font-weight: bold;
 }
@@ -49,8 +51,8 @@ nav a:hover {
 }
 
 button {
-  background-color: #333;
-  color: white;
+  background-color: #070606;
+  color: rgb(209, 5, 5);
   border: none;
   padding: 10px 20px;
   cursor: pointer;
@@ -73,7 +75,7 @@ img {
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); */
 }
 
 .post h2 {
@@ -115,7 +117,7 @@ form button {
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 5px;
-  border: 1px solid #ddd;
+  border: 1px solid #3b2323;
 }
 
 form textarea {
@@ -146,7 +148,7 @@ form button:hover {
 
 /* Add styles for the Create Post form */
 .post-form-container {
-  background-color: white;
+  background-color: rgb(176, 116, 116);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
