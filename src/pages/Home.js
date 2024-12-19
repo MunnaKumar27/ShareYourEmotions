@@ -101,9 +101,9 @@ const Home = () => {
         {posts.length > 0 ? (
           posts.map((post) => (
             <div key={post._id} style={styles.postCard}>
-                <h2 style={styles.title}>{post.title}</h2>
-                <p style={styles.date}>Posted on {new Date(post.date).toLocaleDateString()}</p>
-                {post.image && (
+              <h2 style={styles.title}>{post.title}</h2>
+              <p style={styles.date}>Posted on {new Date(post.date).toLocaleDateString()}</p>
+              {post.image && (
                 <img
                   src={`https://syeb.onrender.com/${post.image}`}
                   alt={post.title}
@@ -135,15 +135,15 @@ const styles = {
     maxWidth: '900px',
     margin: '30px auto',
     padding: '20px',
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     transition: 'all 0.3s ease',
   },
   header: {
     textAlign: 'center',
-    fontSize: '2.5rem',
-    color: '#333',
+    fontSize: '1.5rem',
+    color: '#000',
     marginBottom: '20px',
   },
   tagContainer: {
@@ -153,9 +153,11 @@ const styles = {
   tagHeader: {
     fontSize: '1.5rem',
     fontWeight: '600',
+    color: '#333',
   },
   tagList: {
     display: 'flex',
+    flexWrap: 'wrap',
     justifyContent: 'center',
     gap: '10px',
     marginTop: '10px',
@@ -228,6 +230,27 @@ const styles = {
     textAlign: 'center',
     fontSize: '1.1rem',
     color: '#888',
+  },
+
+  // Responsive styles for mobile view
+  '@media (max-width: 768px)': {
+    header: {
+      fontSize: '1.5rem',
+    },
+    tagButton: {
+      padding: '8px 16px',
+      fontSize: '0.9rem',
+    },
+    title: {
+      fontSize: '1.5rem',
+    },
+    content: {
+      fontSize: '1rem',
+    },
+    deleteButton: {
+      padding: '8px 16px',
+      fontSize: '0.9rem',
+    },
   },
 };
 
