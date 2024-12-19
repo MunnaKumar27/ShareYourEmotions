@@ -1,0 +1,251 @@
+/* src/App.css */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+h1, h2 {
+  color: #333;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+nav {
+  background-color: #333;
+  color: white;
+  padding: 10px 0;
+  text-align: center;
+}
+
+nav a {
+  color: white;
+  margin: 0 20px;
+  font-weight: bold;
+}
+
+nav a:hover {
+  color: #f4f4f4;
+}
+
+button {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #444;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+
+.post {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.post h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.post p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.post .post-date {
+  color: #777;
+  font-size: 14px;
+}
+
+.post .post-image {
+  margin-top: 10px;
+}
+
+.post img {
+  max-width: 100%;
+  height: auto;
+}
+
+form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+form input,
+form textarea,
+form button {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+form textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+form button {
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+form button:hover {
+  background-color: #444;
+}
+
+.post-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.post-list .post-preview {
+  margin-bottom: 20px;
+}
+
+
+/* Add styles for the Create Post form */
+.post-form-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.post-form-container h2 {
+  margin-bottom: 20px;
+}
+
+.post-form-container form input,
+.post-form-container form textarea,
+.post-form-container form button {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.post-form-container form textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.post-form-container form button {
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.post-form-container form button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+/* Add styles for the Create Post form */
+.create-post-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.create-post-container h2 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.create-post-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+.create-post-container .form-group {
+  margin-bottom: 15px;
+}
+
+.create-post-container .form-group label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.create-post-container .form-group input,
+.create-post-container .form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.create-post-container .form-group textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.create-post-container .form-group input[type="file"] {
+  padding: 0;
+}
+
+.create-post-container .btn-submit {
+  background-color: #333;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.create-post-container .btn-submit:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+.create-post-container .btn-submit:hover:not(:disabled) {
+  background-color: #444;
+}
