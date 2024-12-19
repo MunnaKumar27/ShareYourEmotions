@@ -110,8 +110,12 @@ const Home = () => {
                   style={styles.image}
                 />
               )}
-              
-              <p style={styles.content}>{post.content}</p>
+
+              {/* Render content as HTML using dangerouslySetInnerHTML */}
+              <div
+                style={styles.content}
+                dangerouslySetInnerHTML={{ __html: post.content }} // Render HTML content
+              />
               
               <button
                 style={styles.deleteButton}
@@ -133,9 +137,9 @@ const Home = () => {
 const styles = {
   container: {
     maxWidth: '900px',
-    margin: '30px auto',
-    padding: '20px',
-    backgroundColor: '#fff',
+    margin: '20px auto',
+    padding: '5px',
+    backgroundColor:'rgb(189, 187, 219)',
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     transition: 'all 0.3s ease',
@@ -143,7 +147,7 @@ const styles = {
   header: {
     textAlign: 'center',
     fontSize: '1.5rem',
-    color: '#000',
+    color:'rgb(236, 91, 0)',
     marginBottom: '20px',
   },
   tagContainer: {
