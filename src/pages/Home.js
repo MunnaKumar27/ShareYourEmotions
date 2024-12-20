@@ -8,50 +8,15 @@ const Home = () => {
   const [selectedTag, setSelectedTag] = useState(""); // The tag currently selected by the user
   const [loading, setLoading] = useState(true);
 
-  // Fetch a random fallback image for each post
-  const fetchRandomFallbackImages = async (numImages) => {
-    try {
-      const responses = await Promise.all(
-        Array.from({ length: numImages }).map(() =>
-          axios.get('https://api.pexels.com/v1/search?query=hollywood actor&per_page=1', {
-            headers: {
-              Authorization: 'V3lQjGTfXr0rbeQAApjFhQEWSUjJLpVIEYxLVkF4CHtXCJy61TD47MDB', // Your Pexels API key
-            },
-          })
-        )
-      );
-
-      return responses.map((response) => response.data.photos[0]?.src?.medium || 'https://via.placeholder.com/300');
-    } catch (error) {
-      console.error('Error fetching fallback images:', error);
-      return Array(numImages).fill('https://via.placeholder.com/300'); // Fallback to a placeholder
-    }
-  };
-
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const response = await axios.get('https://syeb.onrender.com/api/posts');
-        const postsData = response.data;
-        
-        // Fetch fallback images for posts without images
-        const postsWithoutImages = postsData.filter(post => !post.image);
-        const fallbackImages = await fetchRandomFallbackImages(postsWithoutImages.length);
-
-        // Add fallback images to posts without images
-        const postsWithFallbackImages = postsData.map((post, index) => {
-          if (!post.image) {
-            return { ...post, fallbackImage: fallbackImages.shift() }; // Assign a unique fallback image
-          }
-          return post;
-        });
-
-        setAllPosts(postsWithFallbackImages);
-        setPosts(postsWithFallbackImages); // Initially, show all posts
+        setAllPosts(response.data);
+        setPosts(response.data); // Initially, show all posts
         setLoading(false);
-
         // Extract unique tags from posts
-        const allTags = new Set(postsData.flatMap(post => post.tags));
+        const allTags = new Set(response.data.flatMap(post => post.tags));
         setTags([...allTags]);
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -127,22 +92,6 @@ const Home = () => {
       alert('Share not supported in your browser.');
     }
   };
-  const handleImageError = async (postId, attempt = 1) => {
-    if (attempt <= 3) { // Retry up to 3 times
-      try {
-        // Retry fetching the image or trigger fallback mechanism
-        const response = await axios.get(`https://syeb.onrender.com/api/posts/${postId}`);
-        // If successful, update the post with the image URL
-        setPosts(prevPosts => prevPosts.map(post => post._id === postId ? { ...post, image: response.data.image } : post));
-      } catch (error) {
-        console.error('Error loading image, retrying...', attempt);
-        setTimeout(() => handleImageError(postId, attempt + 1), 2000); // Retry after 2 seconds
-      }
-    } else {
-      // After retrying, if still fails, use the fallback image
-      setPosts(prevPosts => prevPosts.map(post => post._id === postId ? { ...post, image: 'https://via.placeholder.com/300' } : post));
-    }
-  };
 
   if (loading) {
     return (
@@ -189,18 +138,12 @@ const Home = () => {
             <div key={post._id} style={styles.postCard}>
               <h2 style={styles.title}>{post.title}</h2>
               <p style={styles.date}>Posted on {new Date(post.date).toLocaleDateString()}</p>
-              {post.image ? (
+              {post.image && (
                 <img
                   src={`https://syeb.onrender.com/${post.image}`}
                   alt={post.title}
                   style={styles.image}
-                  onError={() => handleImageError(post._id)}
-                />
-              ) : (
-                <img
-                  src={post.fallbackImage} // Use the fallback image assigned earlier
-                  alt="Fallback"
-                  style={styles.image}
+                  onError={(e) => e.target.src = 'https://images.pexels.com/photos/2260959/pexels-photo-2260959.jpeg?cs=srgb&dl=pexels-arthurbrognoli-2260959.jpg&fm=jpg'}
                 />
               )}
 
@@ -227,7 +170,7 @@ const Home = () => {
 
                 <button
                   style={styles.shareButton}
-                  onClick={() => handleShare(post)} // Share post
+                  onClick={() =>handleShare(post)} // Share post
                 >
                   Share Post &#x1F4AC;
                 </button>
