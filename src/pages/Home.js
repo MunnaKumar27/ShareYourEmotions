@@ -78,9 +78,7 @@ const Home = () => {
   const handleShare = (post) => {
     const { title, content } = post;  // Extract title and content of the current post
     if (navigator.share) {
-      navigator.share({
-        title: title,          // Share post title
-        text: content,         // Share post content
+      navigator.share({        // Share post content
         url: window.location.href,  // Share the current page URL
       }).then(() => {
         console.log('Post shared successfully');
@@ -163,7 +161,7 @@ const Home = () => {
 
                 <button
                   style={styles.deleteButton}
-                  onClick={() => handleDelete(post._id)} // Delete post on button click
+                  // onClick={() => handleDelete(post._id)} // Delete post on button click
                 >
                   Delete Post  &#x1F621;
                 </button>
