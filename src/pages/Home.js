@@ -147,7 +147,8 @@ const styles = {
   header: {
     textAlign: 'center',
     fontSize: '1.5rem',
-    color:'rgb(236, 91, 0)',
+    // color:'rgb(236, 91, 0)',
+    color:'white',
     marginBottom: '20px',
   },
   tagContainer: {
