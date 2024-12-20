@@ -8,15 +8,50 @@ const Home = () => {
   const [selectedTag, setSelectedTag] = useState(""); // The tag currently selected by the user
   const [loading, setLoading] = useState(true);
 
+  // Fetch a random fallback image for each post
+  const fetchRandomFallbackImages = async (numImages) => {
+    try {
+      const responses = await Promise.all(
+        Array.from({ length: numImages }).map(() =>
+          axios.get('https://api.pexels.com/v1/search?query=hollywood actor&per_page=1', {
+            headers: {
+              Authorization: 'V3lQjGTfXr0rbeQAApjFhQEWSUjJLpVIEYxLVkF4CHtXCJy61TD47MDB', // Your Pexels API key
+            },
+          })
+        )
+      );
+
+      return responses.map((response) => response.data.photos[0]?.src?.medium || 'https://via.placeholder.com/300');
+    } catch (error) {
+      console.error('Error fetching fallback images:', error);
+      return Array(numImages).fill('https://via.placeholder.com/300'); // Fallback to a placeholder
+    }
+  };
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const response = await axios.get('https://syeb.onrender.com/api/posts');
-        setAllPosts(response.data);
-        setPosts(response.data); // Initially, show all posts
+        const postsData = response.data;
+        
+        // Fetch fallback images for posts without images
+        const postsWithoutImages = postsData.filter(post => !post.image);
+        const fallbackImages = await fetchRandomFallbackImages(postsWithoutImages.length);
+
+        // Add fallback images to posts without images
+        const postsWithFallbackImages = postsData.map((post, index) => {
+          if (!post.image) {
+            return { ...post, fallbackImage: fallbackImages.shift() }; // Assign a unique fallback image
+          }
+          return post;
+        });
+
+        setAllPosts(postsWithFallbackImages);
+        setPosts(postsWithFallbackImages); // Initially, show all posts
         setLoading(false);
+
         // Extract unique tags from posts
-        const allTags = new Set(response.data.flatMap(post => post.tags));
+        const allTags = new Set(postsData.flatMap(post => post.tags));
         setTags([...allTags]);
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -58,6 +93,57 @@ const Home = () => {
     }
   };
 
+  // Copy post content as plain text (stripping out HTML tags)
+  const handleCopy = (content) => {
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = content;  // Set HTML content into a temporary div
+    const plainText = tempDiv.innerText || tempDiv.textContent;  // Extract plain text
+
+    navigator.clipboard.writeText(plainText)  // Copy plain text to clipboard
+      .then(() => {
+        alert('Content copied to clipboard!');
+      })
+      .catch((error) => {
+        alert('Failed to copy content!');
+        console.error('Copy failed:', error);
+      });
+  };
+
+  // Share the post using Web Share API (for supported browsers)
+  const handleShare = (post) => {
+    const { title, content } = post;  // Extract title and content of the current post
+    if (navigator.share) {
+      navigator.share({
+        title: title,          // Share post title
+        text: content,         // Share post content
+        url: window.location.href,  // Share the current page URL
+      }).then(() => {
+        console.log('Post shared successfully');
+      }).catch((error) => {
+        console.error('Error sharing post:', error);
+        alert('Failed to share the post');
+      });
+    } else {
+      alert('Share not supported in your browser.');
+    }
+  };
+  const handleImageError = async (postId, attempt = 1) => {
+    if (attempt <= 3) { // Retry up to 3 times
+      try {
+        // Retry fetching the image or trigger fallback mechanism
+        const response = await axios.get(`https://syeb.onrender.com/api/posts/${postId}`);
+        // If successful, update the post with the image URL
+        setPosts(prevPosts => prevPosts.map(post => post._id === postId ? { ...post, image: response.data.image } : post));
+      } catch (error) {
+        console.error('Error loading image, retrying...', attempt);
+        setTimeout(() => handleImageError(postId, attempt + 1), 2000); // Retry after 2 seconds
+      }
+    } else {
+      // After retrying, if still fails, use the fallback image
+      setPosts(prevPosts => prevPosts.map(post => post._id === postId ? { ...post, image: 'https://via.placeholder.com/300' } : post));
+    }
+  };
+
   if (loading) {
     return (
       <div style={styles.loading}>
@@ -68,7 +154,7 @@ const Home = () => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.header}>ShareYourEmotions</h1>
+      <h1 style={styles.header}>Share Your Emotions &#x2665; </h1>
 
       {/* Tag Filter Section */}
       <div style={styles.tagContainer}>
@@ -103,10 +189,17 @@ const Home = () => {
             <div key={post._id} style={styles.postCard}>
               <h2 style={styles.title}>{post.title}</h2>
               <p style={styles.date}>Posted on {new Date(post.date).toLocaleDateString()}</p>
-              {post.image && (
+              {post.image ? (
                 <img
                   src={`https://syeb.onrender.com/${post.image}`}
                   alt={post.title}
+                  style={styles.image}
+                  onError={() => handleImageError(post._id)}
+                />
+              ) : (
+                <img
+                  src={post.fallbackImage} // Use the fallback image assigned earlier
+                  alt="Fallback"
                   style={styles.image}
                 />
               )}
@@ -116,13 +209,29 @@ const Home = () => {
                 style={styles.content}
                 dangerouslySetInnerHTML={{ __html: post.content }} // Render HTML content
               />
-              
-              <button
-                style={styles.deleteButton}
-                onClick={() => handleDelete(post._id)} // Delete post on button click
-              >
-                Delete Post
-              </button>
+
+              <div style={styles.buttonGroup}>
+                <button
+                  style={styles.copyButton}
+                  onClick={() => handleCopy(post.content)} // Copy content on button click
+                >
+                  Copy &#x1F600;
+                </button>
+
+                <button
+                  style={styles.deleteButton}
+                  onClick={() => handleDelete(post._id)} // Delete post on button click
+                >
+                  Delete Post  &#x1F621;
+                </button>
+
+                <button
+                  style={styles.shareButton}
+                  onClick={() => handleShare(post)} // Share post
+                >
+                  Share Post &#x1F4AC;
+                </button>
+              </div>
             </div>
           ))
         ) : (
@@ -133,23 +242,67 @@ const Home = () => {
   );
 };
 
-// Inline CSS styles
+// Inline CSS styles (same as before)
 const styles = {
   container: {
     maxWidth: '900px',
     margin: '20px auto',
-    padding: '5px',
-    backgroundColor:'rgb(189, 187, 219)',
+    padding: '10px',
+    backgroundColor: 'rgb(255, 140, 0)',
     borderRadius: '10px',
+    border: '2px solid white',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     transition: 'all 0.3s ease',
   },
+  buttonGroup: {
+    marginTop: '10px',
+    display: 'flex',
+    gap: '10px',
+  },
+  copyButton: {
+    padding: '10px 20px',
+    backgroundColor: 'rgb(0, 128, 38)',
+    color: 'black',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '.8rem',
+    transition: 'background-color 0.3s ease',
+    fontFamily: 'Georgia, serif',
+    fontWeight: '800',
+  },
+  deleteButton: {
+    padding: '10px 20px',
+    backgroundColor: 'rgb(229, 55, 55)',
+    color: 'black',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '.8rem',
+    transition: 'background-color 0.3s ease',
+    fontFamily: 'Georgia, serif',
+    fontWeight: '900',
+  },
+  shareButton: {
+    padding: '10px 20px',
+    backgroundColor: 'rgb(54, 199, 71)',
+    color: 'black',
+    // border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '.8rem',
+    transition: 'background-color 0.3s ease',
+    fontFamily: 'Georgia, serif',
+    fontWeight: '900',
+  },
   header: {
     textAlign: 'center',
-    fontSize: '1.5rem',
-    // color:'rgb(236, 91, 0)',
-    color:'white',
+    fontSize: '2rem',
+    marginTop: '15px',
+    color: 'rgb(113, 4, 4)',
+    fontFamily: 'cursive',
     marginBottom: '20px',
+    fontWeight:'bold',
   },
   tagContainer: {
     marginBottom: '20px',
@@ -159,6 +312,7 @@ const styles = {
     fontSize: '1.5rem',
     fontWeight: '600',
     color: '#333',
+    fontFamily: 'Georgia, serif',
   },
   tagList: {
     display: 'flex',
@@ -169,30 +323,35 @@ const styles = {
   },
   tagButton: {
     padding: '10px 20px',
-    backgroundColor: '#007bff',
-    color: 'white',
-    border: 'none',
+    backgroundColor: 'rgb(236, 97, 51)',
+    color: 'black',
+    border:'1px solid rgb(0, 0, 0)',
+    // border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
-    fontSize: '1rem',
+    fontSize: '.8rem',
     transition: 'background-color 0.3s ease',
+    fontFamily: 'cursive',
+    fontWeight: '900'
   },
   postsContainer: {
     marginTop: '20px',
   },
   postCard: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgb(245, 208, 152)',
     marginBottom: '20px',
     padding: '20px',
     borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 2px 4px rgba(239, 183, 16, 0.1)',
     transition: 'all 0.3s ease',
+    border:'1px solid rgb(185, 49, 185)',
   },
   title: {
     fontSize: '2rem',
     color: '#333',
     fontWeight: '600',
     marginBottom: '10px',
+    
   },
   date: {
     fontSize: '0.9rem',
@@ -202,7 +361,7 @@ const styles = {
   content: {
     fontSize: '1.1rem',
     lineHeight: '1.6',
-    color: '#555',
+    color: 'black',
   },
   image: {
     width: '100%',
@@ -210,37 +369,24 @@ const styles = {
     borderRadius: '8px',
     marginTop: '20px',
   },
-  deleteButton: {
-    padding: '10px 20px',
-    backgroundColor: '#dc3545',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    marginTop: '15px',
-    transition: 'background-color 0.3s ease',
-  },
-  loading: {
-    fontSize: '1.5rem',
-    textAlign: 'center',
-    marginTop: '50px',
-  },
   noPosts: {
     textAlign: 'center',
     fontSize: '1.2rem',
     color: '#888',
   },
-  noTags: {
+  loading: {
+    fontSize: '1.5rem',
     textAlign: 'center',
-    fontSize: '1.1rem',
-    color: '#888',
+    marginTop: '50px',
+    color:'white',
+    fontSize: '2rem',
+    transition: 'background-color 0.3s ease',
+    fontFamily: 'Georgia, serif',
+    fontWeight: '900',
   },
-
-  // Responsive styles for mobile view
   '@media (max-width: 768px)': {
     header: {
-      fontSize: '1.5rem',
+      fontSize: '2rem',
     },
     tagButton: {
       padding: '8px 16px',
@@ -255,8 +401,8 @@ const styles = {
     deleteButton: {
       padding: '8px 16px',
       fontSize: '0.9rem',
-    },
-  },
+    }
+  }
 };
 
 export default Home;
