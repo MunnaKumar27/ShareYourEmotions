@@ -1,27 +1,26 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Importing the useNavigate hook
+import { useNavigate } from 'react-router-dom';
 
 const CreatePost = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState(''); // Raw HTML content
   const [image, setImage] = useState(null);
-  const [tags, setTags] = useState(''); // To store the tags
+  const [tags, setTags] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Hook to navigate to another page
+  const navigate = useNavigate();
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Convert the tags string into an array by splitting by commas
     const tagArray = tags.split(',').map((tag) => tag.trim());
 
     const formData = new FormData();
     formData.append('title', title);
     formData.append('content', content); // Send raw HTML content
     formData.append('image', image);
-    formData.append('tags', JSON.stringify(tagArray)); // Send tags as a JSON string
+    formData.append('tags', JSON.stringify(tagArray));
 
     setLoading(true);
 
@@ -47,12 +46,20 @@ const CreatePost = () => {
     document.execCommand(e.target.value, false, null);
   };
 
+  // Adjust textarea height based on content
+  const handleContentChange = (e) => {
+    setContent(e.target.innerHTML);
+    const contentDiv = e.target;
+    contentDiv.style.height = 'auto'; // Reset the height
+    contentDiv.style.height = `${contentDiv.scrollHeight}px`; // Adjust height based on content
+  };
+
   return (
     <div style={styles.container}>
       <h1>Create a New Post</h1>
       <form onSubmit={handleSubmit} style={styles.form}>
         <div style={styles.formGroup}>
-          <label htmlFor="title" >Title</label>
+          <label htmlFor="title">Title</label>
           <input
             type="text"
             id="title"
@@ -71,13 +78,11 @@ const CreatePost = () => {
             id="content"
             contentEditable="true"
             placeholder="Start writing your content here..."
-            onInput={(e) => setContent(e.target.innerHTML)}
+            onInput={handleContentChange}
             style={styles.textarea}
             required
-        
           >
             {/* Placeholder text for the editable content */}
-            {/* <p></p> */}
           </div>
         </div>
 
@@ -88,7 +93,7 @@ const CreatePost = () => {
             onClick={handleFormat}
             style={styles.toolbarButton}
           >
-            B
+            Bold
           </button>
           <button
             type="button"
@@ -96,7 +101,7 @@ const CreatePost = () => {
             onClick={handleFormat}
             style={styles.toolbarButton}
           >
-            I
+            Italic
           </button>
           <button
             type="button"
@@ -161,7 +166,7 @@ const styles = {
     maxWidth: '600px',
     margin: '50px auto',
     padding: '20px',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: 'rgb(240, 103, 57)',
     borderRadius: '8px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
   },
@@ -185,9 +190,9 @@ const styles = {
     borderRadius: '5px',
     border: '1px solid #ccc',
     fontSize: '1rem',
-    height: '150px',
-    minHeight: '150px',
-    whiteSpace: 'pre-wrap',
+    height: 'auto', // Start with auto height
+    minHeight: '150px', // Minimum height for the content area
+    overflow: 'hidden', // Prevent overflow from visible content
   },
   toolbar: {
     display: 'flex',
@@ -200,16 +205,18 @@ const styles = {
     backgroundColor: '#blue',
     border: '1px solid #ccc',
     borderRadius: '5px',
+    color: 'black',
     cursor: 'pointer',
+    backgroundColor: 'rgb(244, 72, 15)',
   },
   submitButton: {
     padding: '10px 20px',
-    backgroundColor: '#28a745',
-    color: 'white',
+    backgroundColor: 'rgb(244, 72, 15)',
+    color: 'black',
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
-    fontSize: '1rem',
+    fontSize: '1.5rem',
   },
 };
 
