@@ -45,18 +45,18 @@ const Home = () => {
   };
 
   // Delete post handler
-  // const handleDelete = async (postId) => {
-  //   if (window.confirm("Are you sure you want to delete this post?")) {
-  //     try {
-  //       await axios.delete(`https://syeb.onrender.com/api/posts/${postId}`);
-  //       setPosts(posts.filter(post => post._id !== postId)); // Remove deleted post from state
-  //       alert('Post deleted successfully!');
-  //     } catch (error) {
-  //       console.error('Error deleting post:', error);
-  //       alert('Failed to delete post!');
-  //     }
-  //   }
-  // };
+  const handleDelete = async (postId) => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      try {
+        await axios.delete(`https://syeb.onrender.com/api/posts/${postId}`);
+        setPosts(posts.filter(post => post._id !== postId)); // Remove deleted post from state
+        alert('Post deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting post:', error);
+        alert('Failed to delete post!');
+      }
+    }
+  };
 
   // Copy post content as plain text (stripping out HTML tags)
   const handleCopy = (content) => {
