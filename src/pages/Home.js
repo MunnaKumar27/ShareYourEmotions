@@ -161,7 +161,7 @@ const Home = () => {
 
                 <button
                   style={styles.deleteButton}
-                  // onClick={() => handleDelete(post._id)} // Delete post on button click
+                  onClick={() => handleDelete(post._id)} // Delete post on button click
                 >
                   Delete Post  &#x1F621;
                 </button>
