@@ -141,7 +141,7 @@ const Home = () => {
                   src={`https://syeb.onrender.com/${post.image}`}
                   alt={post.title}
                   style={styles.image}
-                  onError={(e) => e.target.src = 'https://images.pexels.com/photos/2260959/pexels-photo-2260959.jpeg?cs=srgb&dl=pexels-arthurbrognoli-2260959.jpg&fm=jpg'}
+                  onError={(e) => e.target.src = ''}
                 />
               )}
 
