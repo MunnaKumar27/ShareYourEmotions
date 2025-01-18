@@ -11,35 +11,36 @@ const CreatePost = () => {
   const navigate = useNavigate();
 
   // Handle form submission
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
+    // Convert tags input to an array of strings
     const tagArray = tags.split(',').map((tag) => tag.trim());
-
+  
+    // Create FormData to send the form data, including the image
     const formData = new FormData();
     formData.append('title', title);
     formData.append('content', content); // Send raw HTML content
-    formData.append('image', image);
-    formData.append('tags', JSON.stringify(tagArray));
-
-    setLoading(true);
-
+    formData.append('image', image); // Ensure 'image' is a valid File object
+    formData.append('tags', JSON.stringify(tagArray)); // Convert tags to JSON string
+  
+    setLoading(true); // Show loading state
+  
     try {
-      const response = await axios.post('https://syeb.onrender.com/api/posts', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      // Send POST request to the backend
+      const response = await axios.post('https://syeb.onrender.com/api/posts', formData);
+  
       console.log('Post created:', response.data);
-      setLoading(false);
-
-      // Redirect to Home page after post is created
+      setLoading(false); // Hide loading state
+  
+      // Redirect to Home page after successful post creation
       navigate('/'); // Navigates to the Home page ("/")
     } catch (error) {
       console.error('Error creating post:', error);
-      setLoading(false);
+      setLoading(false); // Hide loading state in case of error
     }
   };
+  
 
   // Handle content formatting actions (bold, italic, etc.)
   const handleFormat = (e) => {
