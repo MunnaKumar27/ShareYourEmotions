@@ -141,7 +141,7 @@ const Home = () => {
                   src={`https://syeb.onrender.com/${post.image}`}
                   alt={post.title}
                   style={styles.image}
-                  onError={(e) => e.target.src = ''}
+                  onError={(e) => e.target.src = 'https://picsum.photos/200/300'}
                 />
               )}
 
